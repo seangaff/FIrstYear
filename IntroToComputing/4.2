@@ -1,0 +1,40 @@
+		LDR		R1, =0xD9448A9B		; most significaint 32 bits (63 ... 32)
+		LDR		R0, =0xB8AA9D3B		; least significant 32 bits (31 ... 0)
+		LDR		R2, =4						; shift count
+		
+		LDR		R3, =0x00000001		; mask to clear least significant bit (mask1)
+		LDR		R4, =0x40000000		; mask to clear most significant bit (mask2)
+		
+		CMP		R2, #0						; if (shiftCount != 0) {
+		BEQ		skip
+		CMP		R2, #0							; if (shiftCount > 0) {
+		BLT		lwrThn
+lpGtr
+		CMP		R2, #0								; while ( shiftCount != 0 ) {
+		BEQ		skip
+		MOV		R0, R0, LSR  #1						;LSR leastSignificant by 1
+		AND		R5, R1, R3								; temp = mostSignificant & mask1
+		MOV		R5, R5, ROR #1						; ROR temp by 1
+		ORR		R0, R0, R5								; leastSignificiant = leastSignificant | temp
+		MOV		R1, R1, LSR #1						; LSR mostSignificant by 1
+		
+		SUB		R2, R2, #1								; shiftCount -= 1
+		B		lpGtr										;}
+		
+lwrThn												; else {
+		
+lpLss
+		CMP		R2, #0								; while (shiftCount != 0 ) {
+		BEQ		skip
+		MOV		R1, R1, LSL #1						; LSL mostSignificant by 1
+		ORR		R5, R0, R4								;  temp = leastSignificant | mask2
+		MOV		R5, R5, LSR #31						; LSR temp by 31
+		ORR		R1, R1, R5								; mostSignificant = most Significant | temp
+		MOV		R0, R0, LSL #1						;  LSL LeastSignificant by 1
+		
+		ADD		R2, R2, #1								; shiftCount += 1
+		B		lpLss										;}
+		
+skip												;		}
+		
+		;STOP	B		STOP

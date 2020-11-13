@@ -1,0 +1,65 @@
+;
+; CSU11021 Introduction to Computing I 2019/2020
+; Anagrams
+;
+
+	AREA	RESET, CODE, READONLY
+	ENTRY
+
+	LDR	R0, =tststr1	; first string
+	LDR	R1, =tststr2	; second string
+
+	LDR R2, =0			; first length
+	LDR R3, =0			; second length
+
+checkLength1
+	LDRB R4, [R0]				; load value1 from tststr1
+	CMP R4, #0				; while (value1 != 0) {
+	BEQ endCheckLength1	;
+	ADD R2, R2, #1			; count1 += 1
+	ADD R0, R0, #1			; teststr1 += 1
+	B checkLength1
+
+endCheckLength1		;}
+
+checkLength2
+	LDRB R4, [R1]				;load value2 from tststr2
+	CMP R4, #0				; whiel(value2 != 0) {
+	BEQ endCheckLength2
+	ADD R3, R3, #1			; count2 += 1
+	ADD R1, R1, #1			;tststr2 += 1
+	B checkLength2    		;}
+endCheckLength2
+
+
+	CMP R3, R2				; if( count1 != count2) {
+	BEQ lengthsEqual		
+	LDR R0, =0				; isAnagram = false;
+	B endAll						;}
+
+lengthsEqual
+	LDR R0, =tststr1
+	LDR R1, =tststr2
+	LDR R3, =0			; var to test matching
+
+whileLoop
+	CMP R2, #0			; while (count3 != 0) {
+	BEQ endAll
+	LDRB R4, [R0]			; load value1 from tststr1
+	EOR R3, R3, R4		; value1 EOR 0
+	LDRB R3, [R1]			; load value 2 from tststr2
+	EOR R3, R3, R4		; value2 EOR 0
+	SUB R2, R2, #1		; count3 -= 1
+	B whileLoop			; }
+
+endwhile
+	MOV R0, R3			; isAnagram = value2
+
+endAll
+
+STOP	B	STOP
+
+tststr1	DCB	"tapas",0
+tststr2	DCB	"pasta",0
+
+	END
